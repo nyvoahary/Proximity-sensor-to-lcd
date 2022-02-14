@@ -1,15 +1,19 @@
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x3f, 16, 2);
+
 /*
-  Code from https://www.carnetdumaker.net/articles/mesurer-une-distance-avec-un-capteur-ultrason-hc-sr04-et-une-carte-arduino-genuino/
+  Initiat Code from https://www.carnetdumaker.net/articles/mesurer-une-distance-avec-un-capteur-ultrason-hc-sr04-et-une-carte-arduino-genuino/
+  I displayed the values on the LCD screen and sarial monitor
 */
 
-/* Constantes pour les broches */
+/* Pin constants */
 const byte TRIGGER_PIN = 2; // Broche TRIGGER
 const byte ECHO_PIN = 3;    // Broche ECHO
  
-/* Constantes pour le timeout */
+/* Constants for the timeout */
 const unsigned long MEASURE_TIMEOUT = 25000UL; // 25ms = ~8m à 340m/s
 
-/* Vitesse du son dans l'air en mm/us */
+/* Speed of sound in air in mm/us */
 const float SOUND_SPEED = 340.0 / 1000;
 
 void setup() {
@@ -24,19 +28,20 @@ void setup() {
 }
 
 void loop() {
-  
-  /* 1. Lance une mesure de distance en envoyant une impulsion HIGH de 10µs sur la broche TRIGGER */
+
+  /* 1. Initiates a distance measurement by sending a HIGH pulse of 10µs on the TRIGGER pin */
   digitalWrite(TRIGGER_PIN, HIGH);
   delayMicroseconds(10);
   digitalWrite(TRIGGER_PIN, LOW);
-  
-  /* 2. Mesure le temps entre l'envoi de l'impulsion ultrasonique et son écho (si il existe) */
+
+  /* 2. Measures the time between the sending of the ultrasonic pulse and its echo (if it exists) */
   long measure = pulseIn(ECHO_PIN, HIGH, MEASURE_TIMEOUT);
-   
-  /* 3. Calcul la distance à partir du temps mesuré */
+
+  /* 3. Calculate distance from measured time */
   float distance_mm = measure / 2.0 * SOUND_SPEED;
-   
-  /* Affiche les résultats en mm, cm et m */
+
+  /* Displays results in mm, cm and m */
+  // In Serial monitor
   Serial.print(F("Distance: "));
   Serial.print(distance_mm);
   Serial.print(F("mm ("));
@@ -44,7 +49,12 @@ void loop() {
   Serial.print(F("cm, "));
   Serial.print(distance_mm / 1000.0, 2);
   Serial.println(F("m)"));
-   
-  /* Délai d'attente pour éviter d'afficher trop de résultats à la seconde */
-  delay(500);
+
+  // Print value to LCD
+  lcd.setCursor(0, 0);
+  lcd.print("Distance:");
+  lcd.setCursor(9, 0);
+  lcd.print(distance_mm);
+  /* Timeout to avoid displaying too many results per second */   delay(2000);
+  lcd.clear();
 }
