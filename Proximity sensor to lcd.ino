@@ -1,3 +1,4 @@
+//Import I2C library and declare its adress
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x3f, 16, 2);
 
@@ -18,8 +19,11 @@ const float SOUND_SPEED = 340.0 / 1000;
 
 void setup() {
    
-  /* Initialise le port série */
+  // Initialise le port série and the LCD
   Serial.begin(115200);
+
+  lcd.init();
+  lcd.backlight();
    
   /* Initialise les broches */
   pinMode(TRIGGER_PIN, OUTPUT);
@@ -44,17 +48,17 @@ void loop() {
   // In Serial monitor
   Serial.print(F("Distance: "));
   Serial.print(distance_mm);
+  // Print value to LCD
+  lcd.setCursor(0, 0);
+  lcd.print("Distance:");
+  lcd.setCursor(9, 0);
+  lcd.print(distance_mm);
   Serial.print(F("mm ("));
   Serial.print(distance_mm / 10.0, 2);
   Serial.print(F("cm, "));
   Serial.print(distance_mm / 1000.0, 2);
   Serial.println(F("m)"));
 
-  // Print value to LCD
-  lcd.setCursor(0, 0);
-  lcd.print("Distance:");
-  lcd.setCursor(9, 0);
-  lcd.print(distance_mm);
   /* Timeout to avoid displaying too many results per second */   delay(2000);
   lcd.clear();
 }
